@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Tag, Flag } from 'lucide-react';
+import { X, Calendar, Tag, Flag, Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,6 +15,7 @@ import {
 import { Task, TaskPriority, TaskStatus } from '@/types';
 import { useTaskStore } from '@/stores/taskStore';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -34,6 +35,109 @@ export function TaskModal({ isOpen, onClose, task }: TaskModalProps) {
     status: task?.status || 'pending' as TaskStatus,
     tags: task?.tags.join(', ') || '',
   });
+
+  const [isRecordingTitle, setIsRecordingTitle] = useState(false);
+  const [isRecordingDescription, setIsRecordingDescription] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (task) {
+      setFormData({
+        title: task.title || '',
+        description: task.description || '',
+        dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '',
+        priority: task.priority || 'medium',
+        status: task.status || 'pending',
+        tags: task.tags?.join(', ') || '',
+      });
+    } else {
+      setFormData({
+        title: '',
+        description: '',
+        dueDate: '',
+        priority: 'medium',
+        status: 'pending',
+        tags: '',
+      });
+    }
+  }, [task]);
+
+  const startRecording = (field: 'title' | 'description') => {
+    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
+    if (!SpeechRecognitionAPI) {
+      toast.error('Seu navegador não suporta reconhecimento de voz');
+      return;
+    }
+
+    const recognition = new SpeechRecognitionAPI();
+    
+    recognition.lang = 'pt-BR';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+      if (field === 'title') {
+        setIsRecordingTitle(true);
+      } else {
+        setIsRecordingDescription(true);
+      }
+    };
+
+    recognition.onresult = (event) => {
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        }
+      }
+      
+      if (finalTranscript) {
+        setFormData(prev => ({
+          ...prev,
+          [field]: prev[field] + (prev[field] ? ' ' : '') + finalTranscript
+        }));
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+      toast.error('Erro no reconhecimento de voz');
+      stopRecording(field);
+    };
+
+    recognition.onend = () => {
+      if (field === 'title') {
+        setIsRecordingTitle(false);
+      } else {
+        setIsRecordingDescription(false);
+      }
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
+  const stopRecording = (field: 'title' | 'description') => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+    if (field === 'title') {
+      setIsRecordingTitle(false);
+    } else {
+      setIsRecordingDescription(false);
+    }
+  };
+
+  const toggleRecording = (field: 'title' | 'description') => {
+    const isRecording = field === 'title' ? isRecordingTitle : isRecordingDescription;
+    if (isRecording) {
+      stopRecording(field);
+    } else {
+      startRecording(field);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,13 +180,13 @@ export function TaskModal({ isOpen, onClose, task }: TaskModalProps) {
             onClick={onClose}
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <div className="glass-card rounded-2xl p-6 border border-primary/20">
+            <div className="glass-card rounded-2xl p-6 border border-primary/20 w-full max-w-lg max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold">
                   {isEditing ? 'Editar Tarefa' : 'Nova Tarefa'}
@@ -95,29 +199,75 @@ export function TaskModal({ isOpen, onClose, task }: TaskModalProps) {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
                   <Label htmlFor="title">Título</Label>
-                  <Input
-                    id="title"
-                    placeholder="Nome da tarefa"
-                    value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                    required
-                    className="bg-muted/50 border-border focus:border-primary"
-                  />
+                  <div className="relative flex gap-2">
+                    <Input
+                      id="title"
+                      placeholder="Nome da tarefa"
+                      value={formData.title}
+                      onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
+                      required
+                      className="bg-muted/50 border-border focus:border-primary flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant={isRecordingTitle ? "destructive" : "outline"}
+                      size="icon"
+                      onClick={() => toggleRecording('title')}
+                      className={cn(
+                        "shrink-0 transition-all",
+                        isRecordingTitle && "animate-pulse bg-destructive"
+                      )}
+                    >
+                      {isRecordingTitle ? (
+                        <MicOff className="h-4 w-4" />
+                      ) : (
+                        <Mic className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                  {isRecordingTitle && (
+                    <p className="text-xs text-destructive animate-pulse">
+                      🎤 Gravando... Fale agora
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="description">Descrição</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Detalhes da tarefa..."
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    className="bg-muted/50 border-border focus:border-primary min-h-[80px]"
-                  />
+                  <div className="relative flex gap-2">
+                    <Textarea
+                      id="description"
+                      placeholder="Detalhes da tarefa..."
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({ ...formData, description: e.target.value })
+                      }
+                      className="bg-muted/50 border-border focus:border-primary min-h-[80px] flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant={isRecordingDescription ? "destructive" : "outline"}
+                      size="icon"
+                      onClick={() => toggleRecording('description')}
+                      className={cn(
+                        "shrink-0 self-start transition-all",
+                        isRecordingDescription && "animate-pulse bg-destructive"
+                      )}
+                    >
+                      {isRecordingDescription ? (
+                        <MicOff className="h-4 w-4" />
+                      ) : (
+                        <Mic className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                  {isRecordingDescription && (
+                    <p className="text-xs text-destructive animate-pulse">
+                      🎤 Gravando... Fale agora
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
