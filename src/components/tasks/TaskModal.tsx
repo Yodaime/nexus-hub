@@ -62,19 +62,29 @@ export function TaskModal({ isOpen, onClose, task }: TaskModalProps) {
     }
   }, [task]);
 
-  const startRecording = (field: 'title' | 'description') => {
+  const startRecording = async (field: 'title' | 'description') => {
     const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     
     if (!SpeechRecognitionAPI) {
-      toast.error('Seu navegador não suporta reconhecimento de voz');
+      toast.error('Seu navegador não suporta reconhecimento de voz. Tente usar Chrome ou Edge.');
+      return;
+    }
+
+    // Verificar permissão do microfone primeiro
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(track => track.stop()); // Parar o stream após verificar
+    } catch (err) {
+      toast.error('Permissão de microfone negada. Habilite o acesso ao microfone nas configurações do navegador.');
       return;
     }
 
     const recognition = new SpeechRecognitionAPI();
     
     recognition.lang = 'pt-BR';
-    recognition.continuous = true;
+    recognition.continuous = false; // Mudar para false para evitar problemas de rede
     recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
       if (field === 'title') {
@@ -84,11 +94,16 @@ export function TaskModal({ isOpen, onClose, task }: TaskModalProps) {
       }
     };
 
-    recognition.onresult = (event) => {
+    recognition.onresult = (event: any) => {
+      let interimTranscript = '';
       let finalTranscript = '';
+      
       for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
+          finalTranscript += transcript;
+        } else {
+          interimTranscript += transcript;
         }
       }
       
@@ -100,9 +115,32 @@ export function TaskModal({ isOpen, onClose, task }: TaskModalProps) {
       }
     };
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
-      toast.error('Erro no reconhecimento de voz');
+      
+      let errorMessage = 'Erro no reconhecimento de voz';
+      switch (event.error) {
+        case 'network':
+          errorMessage = 'Erro de rede. Verifique sua conexão com a internet.';
+          break;
+        case 'not-allowed':
+        case 'permission-denied':
+          errorMessage = 'Permissão de microfone negada.';
+          break;
+        case 'no-speech':
+          errorMessage = 'Nenhuma fala detectada. Tente novamente.';
+          break;
+        case 'audio-capture':
+          errorMessage = 'Microfone não encontrado.';
+          break;
+        case 'aborted':
+          // Ignorar erro de cancelamento
+          return;
+        default:
+          errorMessage = `Erro: ${event.error}`;
+      }
+      
+      toast.error(errorMessage);
       stopRecording(field);
     };
 
@@ -115,7 +153,14 @@ export function TaskModal({ isOpen, onClose, task }: TaskModalProps) {
     };
 
     recognitionRef.current = recognition;
-    recognition.start();
+    
+    try {
+      recognition.start();
+    } catch (err) {
+      console.error('Error starting recognition:', err);
+      toast.error('Erro ao iniciar reconhecimento de voz. Tente novamente.');
+      stopRecording(field);
+    }
   };
 
   const stopRecording = (field: 'title' | 'description') => {
