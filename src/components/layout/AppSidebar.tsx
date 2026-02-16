@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckSquare,
   Wallet,
-  LayoutDashboard,
+  Bell,
   Menu,
   X,
   Sparkles,
@@ -22,6 +22,11 @@ const navItems = [
     title: 'Finanças',
     icon: Wallet,
     path: '/finances',
+  },
+  {
+    title: 'Lembretes',
+    icon: Bell,
+    path: '/reminders',
   },
 ];
 
