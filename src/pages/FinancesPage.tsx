@@ -146,21 +146,21 @@ export default function FinancesPage() {
 
   return (
     <MainLayout>
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold neon-text-secondary">Finanças</h1>
-            <p className="text-muted-foreground mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold neon-text-secondary">Finanças</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">
               Controle suas receitas e despesas
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={exportData}>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="outline" onClick={exportData} className="flex-1 sm:flex-none">
               <Download className="w-4 h-4" />
               Exportar
             </Button>
-            <Button variant="neon" onClick={() => setIsModalOpen(true)}>
+            <Button variant="neon" onClick={() => setIsModalOpen(true)} className="flex-1 sm:flex-none">
               <Plus className="w-4 h-4" />
               Nova Transação
             </Button>
@@ -168,7 +168,7 @@ export default function FinancesPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
           <StatCard
             title="Receitas"
             value={formatCurrency(totalIncome)}
@@ -190,7 +190,7 @@ export default function FinancesPage() {
         </div>
 
         {/* Charts */}
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Expenses by Category */}
           <GlassCard className="p-6">
             <h3 className="text-lg font-semibold mb-4">Despesas por Categoria</h3>

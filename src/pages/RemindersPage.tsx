@@ -79,23 +79,23 @@ export default function RemindersPage() {
 
   return (
     <MainLayout>
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold neon-text-primary">Lembretes</h1>
-            <p className="text-muted-foreground mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold neon-text-primary">Lembretes</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">
               Nunca esqueça de algo importante
             </p>
           </div>
-          <Button variant="neon" onClick={() => setIsAdding(true)}>
+          <Button variant="neon" onClick={() => setIsAdding(true)} className="w-full sm:w-auto">
             <Plus className="w-4 h-4" />
             Novo Lembrete
           </Button>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
           <StatCard title="Ativos" value={stats.active} icon={<Bell className="w-5 h-5" />} variant="primary" />
           <StatCard title="Próximos" value={stats.upcoming} icon={<Clock className="w-5 h-5" />} variant="default" />
           <StatCard title="Atrasados" value={stats.overdue} icon={<BellRing className="w-5 h-5" />} variant="destructive" />

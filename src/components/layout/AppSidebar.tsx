@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   CheckSquare,
   Wallet,
@@ -13,21 +13,9 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 const navItems = [
-  {
-    title: 'Tarefas',
-    icon: CheckSquare,
-    path: '/',
-  },
-  {
-    title: 'Finanças',
-    icon: Wallet,
-    path: '/finances',
-  },
-  {
-    title: 'Lembretes',
-    icon: Bell,
-    path: '/reminders',
-  },
+  { title: 'Tarefas', icon: CheckSquare, path: '/' },
+  { title: 'Finanças', icon: Wallet, path: '/finances' },
+  { title: 'Lembretes', icon: Bell, path: '/reminders' },
 ];
 
 export function AppSidebar() {
@@ -36,30 +24,7 @@ export function AppSidebar() {
 
   return (
     <>
-      {/* Mobile overlay */}
-      <AnimatePresence>
-        {!collapsed && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 lg:hidden"
-            onClick={() => setCollapsed(true)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Mobile toggle button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="fixed top-4 left-4 z-50 lg:hidden"
-        onClick={() => setCollapsed(!collapsed)}
-      >
-        {collapsed ? <Menu className="h-5 w-5" /> : <X className="h-5 w-5" />}
-      </Button>
-
-      {/* Sidebar */}
+      {/* Sidebar - Desktop only */}
       <motion.aside
         initial={false}
         animate={{
@@ -68,9 +33,9 @@ export function AppSidebar() {
         }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className={cn(
-          'fixed left-0 top-0 h-screen z-50',
+          'hidden lg:flex fixed left-0 top-0 h-screen z-50',
           'bg-sidebar border-r border-sidebar-border',
-          'flex flex-col',
+          'flex-col',
           'lg:relative lg:translate-x-0',
           collapsed ? 'lg:w-0' : 'lg:w-[280px]'
         )}
@@ -100,12 +65,7 @@ export function AppSidebar() {
                   isActive && 'bg-primary/10 text-primary border border-primary/20'
                 )}
               >
-                <item.icon
-                  className={cn(
-                    'w-5 h-5',
-                    isActive && 'text-primary'
-                  )}
-                />
+                <item.icon className={cn('w-5 h-5', isActive && 'text-primary')} />
                 <span className="font-medium">{item.title}</span>
                 {isActive && (
                   <motion.div
