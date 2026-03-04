@@ -5,6 +5,7 @@ import {
   CheckSquare,
   Wallet,
   Bell,
+  LayoutDashboard,
   Menu,
   X,
   Sparkles,
@@ -16,6 +17,7 @@ const navItems = [
   { title: 'Tarefas', icon: CheckSquare, path: '/' },
   { title: 'Finanças', icon: Wallet, path: '/finances' },
   { title: 'Lembretes', icon: Bell, path: '/reminders' },
+  { title: 'Organizar', icon: LayoutDashboard, path: '/organize' },
 ];
 
 export function AppSidebar() {
