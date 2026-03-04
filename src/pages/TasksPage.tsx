@@ -148,63 +148,63 @@ export default function TasksPage() {
 
   return (
     <MainLayout>
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold neon-text-primary">Tarefas</h1>
-            <p className="text-muted-foreground mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold neon-text-primary">Tarefas</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">
               Gerencie suas tarefas e acompanhe o progresso
             </p>
           </div>
-          <Button variant="neon" onClick={() => setIsModalOpen(true)}>
+          <Button variant="neon" onClick={() => setIsModalOpen(true)} className="w-full sm:w-auto">
             <Plus className="w-4 h-4" />
             Nova Tarefa
           </Button>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
           <StatCard
             title="Total"
             value={stats.total}
-            icon={<ListTodo className="w-5 h-5" />}
+            icon={<ListTodo className="w-4 h-4 sm:w-5 sm:h-5" />}
             variant="default"
           />
           <StatCard
             title="Urgentes"
             value={stats.urgent}
-            icon={<Flame className="w-5 h-5" />}
+            icon={<Flame className="w-4 h-4 sm:w-5 sm:h-5" />}
             variant="destructive"
           />
           <StatCard
             title="Concluídas"
             value={stats.completed}
-            icon={<CheckCircle2 className="w-5 h-5" />}
+            icon={<CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />}
             variant="success"
           />
           <StatCard
             title="Em Andamento"
             value={stats.inProgress}
-            icon={<Clock className="w-5 h-5" />}
+            icon={<Clock className="w-4 h-4 sm:w-5 sm:h-5" />}
             variant="primary"
           />
           <StatCard
             title="Pendentes"
             value={stats.pending}
-            icon={<ListTodo className="w-5 h-5" />}
+            icon={<ListTodo className="w-4 h-4 sm:w-5 sm:h-5" />}
             variant="default"
           />
           <StatCard
             title="Atrasadas"
             value={stats.overdue}
-            icon={<AlertTriangle className="w-5 h-5" />}
+            icon={<AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />}
             variant="destructive"
           />
         </div>
 
         {/* Charts */}
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
           <GlassCard className="p-6">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
