@@ -211,9 +211,9 @@ export default function HabitsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <GlassCard
+                  <div
                     className={cn(
-                      'p-4 flex items-center gap-4 transition-all duration-200 cursor-pointer',
+                      'glass-card rounded-xl p-4 flex items-center gap-4 transition-all duration-200 cursor-pointer',
                       completed && 'border-success/30'
                     )}
                     onClick={() => toggleCompletion(habit.id, dateStr)}
