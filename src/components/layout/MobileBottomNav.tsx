@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { CheckSquare, Wallet, Bell, LayoutDashboard, Repeat } from 'lucide-react';
+import { CheckSquare, Wallet, Bell, LayoutDashboard, Repeat, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -8,6 +8,7 @@ const navItems = [
   { title: 'Finanças', icon: Wallet, path: '/finances' },
   { title: 'Hábitos', icon: Repeat, path: '/habits' },
   { title: 'Lembretes', icon: Bell, path: '/reminders' },
+  { title: 'Metas', icon: Target, path: '/goals' },
   { title: 'Organizar', icon: LayoutDashboard, path: '/organize' },
 ];
 

@@ -10,6 +10,7 @@ import {
   X,
   Sparkles,
   Repeat,
+  Target,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,7 @@ const navItems = [
   { title: 'Finanças', icon: Wallet, path: '/finances' },
   { title: 'Hábitos', icon: Repeat, path: '/habits' },
   { title: 'Lembretes', icon: Bell, path: '/reminders' },
+  { title: 'Metas', icon: Target, path: '/goals' },
   { title: 'Organizar', icon: LayoutDashboard, path: '/organize' },
 ];
 

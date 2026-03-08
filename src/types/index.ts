@@ -35,5 +35,22 @@ export interface Transaction {
   createdAt: string;
 }
 
+// Goal types
+export type GoalFrequency = 'daily' | 'weekly';
+export type GoalStatus = 'not-started' | 'in-progress' | 'completed';
+
+export interface Goal {
+  id: string;
+  title: string;
+  description: string;
+  frequency: GoalFrequency;
+  status: GoalStatus;
+  dueDate: string;
+  progress: number; // 0-100
+  category?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // App types
 export type Module = 'tasks' | 'finances';

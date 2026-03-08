@@ -7,6 +7,7 @@ import TasksPage from "./pages/TasksPage";
 import FinancesPage from "./pages/FinancesPage";
 import HabitsPage from "./pages/HabitsPage";
 import RemindersPage from "./pages/RemindersPage";
+import GoalsPage from "./pages/GoalsPage";
 import OrganizePage from "./pages/OrganizePage";
 import NotFound from "./pages/NotFound";
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/finances" element={<FinancesPage />} />
           <Route path="/habits" element={<HabitsPage />} />
           <Route path="/reminders" element={<RemindersPage />} />
+          <Route path="/goals" element={<GoalsPage />} />
           <Route path="/organize" element={<OrganizePage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
