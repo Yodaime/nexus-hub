@@ -9,6 +9,7 @@ import {
   Menu,
   X,
   Sparkles,
+  Repeat,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ import { Button } from '@/components/ui/button';
 const navItems = [
   { title: 'Tarefas', icon: CheckSquare, path: '/' },
   { title: 'Finanças', icon: Wallet, path: '/finances' },
+  { title: 'Hábitos', icon: Repeat, path: '/habits' },
   { title: 'Lembretes', icon: Bell, path: '/reminders' },
   { title: 'Organizar', icon: LayoutDashboard, path: '/organize' },
 ];
