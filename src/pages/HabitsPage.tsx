@@ -247,7 +247,7 @@ export default function HabitsPage() {
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
-                  </GlassCard>
+                  </div>
                 </motion.div>
               );
             })
