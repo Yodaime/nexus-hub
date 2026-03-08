@@ -85,9 +85,9 @@ export function TransactionModal({ isOpen, onClose, transaction }: TransactionMo
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg px-4"
           >
-            <div className="glass-card rounded-2xl p-6 border border-secondary/20">
+            <div className="glass-card rounded-2xl p-6 border border-secondary/20 mx-auto max-w-lg">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold">
                   {isEditing ? 'Editar Transação' : 'Nova Transação'}
