@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TasksPage from "./pages/TasksPage";
 import FinancesPage from "./pages/FinancesPage";
+import HabitsPage from "./pages/HabitsPage";
 import RemindersPage from "./pages/RemindersPage";
 import OrganizePage from "./pages/OrganizePage";
 import NotFound from "./pages/NotFound";
