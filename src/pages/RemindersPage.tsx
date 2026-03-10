@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { Plus, Bell, BellRing, Clock, CheckCircle2, Trash2, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { v4 as uuidv4 } from 'uuid';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -13,18 +12,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-
-interface Reminder {
-  id: string;
-  title: string;
-  description: string;
-  dateTime: string;
-  completed: boolean;
-  createdAt: string;
-}
+import { useReminderStore } from '@/stores/reminderStore';
 
 export default function RemindersPage() {
-  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const { reminders, addReminder, toggleComplete, deleteReminder } = useReminderStore();
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -44,15 +35,11 @@ export default function RemindersPage() {
       toast.error('Preencha o título e a data/hora.');
       return;
     }
-    const newReminder: Reminder = {
-      id: uuidv4(),
+    addReminder({
       title: title.trim(),
       description: description.trim(),
       dateTime,
-      completed: false,
-      createdAt: new Date().toISOString(),
-    };
-    setReminders(prev => [newReminder, ...prev]);
+    });
     setTitle('');
     setDescription('');
     setDateTime('');
@@ -60,14 +47,8 @@ export default function RemindersPage() {
     toast.success('Lembrete criado!');
   };
 
-  const toggleComplete = (id: string) => {
-    setReminders(prev =>
-      prev.map(r => r.id === id ? { ...r, completed: !r.completed } : r)
-    );
-  };
-
-  const deleteReminder = (id: string) => {
-    setReminders(prev => prev.filter(r => r.id !== id));
+  const handleDelete = (id: string) => {
+    deleteReminder(id);
     toast.success('Lembrete removido.');
   };
 
