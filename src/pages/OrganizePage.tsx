@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, GripVertical, Clock, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Plus, GripVertical, Clock, AlertTriangle, CheckCircle2, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ptBR } from 'date-fns/locale';
 
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -132,40 +133,43 @@ export default function OrganizePage() {
                   dragOverColumn === col.id ? 'ring-2 ring-primary/50 scale-[1.01]' : ''
                 }`}
               >
-                {/* Column Header */}
-                <div className={`flex items-center gap-2 mb-4 pb-3 border-b ${col.colorClass}`}>
-                  {col.icon}
-                  <h3 className="font-semibold text-sm">{col.title}</h3>
-                  <span className="ml-auto text-xs bg-muted/50 px-2 py-0.5 rounded-full">
-                    {tasksByStatus[col.id].length}
-                  </span>
-                </div>
+                <Collapsible defaultOpen>
+                  <CollapsibleTrigger className={`flex items-center gap-2 w-full mb-4 pb-3 border-b ${col.colorClass}`}>
+                    {col.icon}
+                    <h3 className="font-semibold text-sm">{col.title}</h3>
+                    <span className="ml-auto text-xs bg-muted/50 px-2 py-0.5 rounded-full">
+                      {tasksByStatus[col.id].length}
+                    </span>
+                    <ChevronDown className="w-4 h-4 transition-transform duration-200 [&[data-state=open]]:rotate-180" />
+                  </CollapsibleTrigger>
 
-                {/* Cards */}
-                <div className="space-y-3 min-h-[120px]">
-                  <AnimatePresence mode="popLayout">
-                    {tasksByStatus[col.id].map((task) => (
-                      <KanbanCard
-                        key={task.id}
-                        task={task}
-                        onEdit={handleEdit}
-                        onDragStart={handleDragStart}
-                        onMove={handleMoveTask}
-                        isDragged={draggedTask?.id === task.id}
-                        columns={columns}
-                        currentStatus={col.id}
-                      />
-                    ))}
-                  </AnimatePresence>
+                  <CollapsibleContent>
+                    <div className="space-y-3 min-h-[120px]">
+                      <AnimatePresence mode="popLayout">
+                        {tasksByStatus[col.id].map((task) => (
+                          <KanbanCard
+                            key={task.id}
+                            task={task}
+                            onEdit={handleEdit}
+                            onDragStart={handleDragStart}
+                            onMove={handleMoveTask}
+                            isDragged={draggedTask?.id === task.id}
+                            columns={columns}
+                            currentStatus={col.id}
+                          />
+                        ))}
+                      </AnimatePresence>
 
-                  {tasksByStatus[col.id].length === 0 && (
-                    <div className="flex items-center justify-center h-24 border-2 border-dashed border-muted/30 rounded-xl">
-                      <p className="text-xs text-muted-foreground">
-                        Arraste tarefas aqui
-                      </p>
+                      {tasksByStatus[col.id].length === 0 && (
+                        <div className="flex items-center justify-center h-24 border-2 border-dashed border-muted/30 rounded-xl">
+                          <p className="text-xs text-muted-foreground">
+                            Arraste tarefas aqui
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </CollapsibleContent>
+                </Collapsible>
               </GlassCard>
             </div>
           ))}
