@@ -53,25 +53,30 @@ export default function GoalsPage() {
 
   const KanbanColumn = ({ status, title, goals }: { status: GoalStatus; title: string; goals: Goal[] }) => (
     <div className="flex-1 min-w-[280px] bg-muted/30 rounded-lg p-4 border border-border/50">
-      <div className="mb-4">
-        <h3 className="font-semibold text-sm text-muted-foreground">{title}</h3>
-        <span className="text-xs text-muted-foreground">{goals.length} meta(s)</span>
-      </div>
-      <div className="space-y-3 min-h-[400px]">
-        {goals.length > 0 ? (
-          goals.map(goal => (
-            <GoalCard
-              key={goal.id}
-              goal={goal}
-              onEdit={handleEditGoal}
-            />
-          ))
-        ) : (
-          <div className="flex items-center justify-center h-[400px] text-muted-foreground text-sm">
-            Nenhuma meta
+      <Collapsible defaultOpen>
+        <CollapsibleTrigger className="flex items-center gap-2 w-full mb-4">
+          <h3 className="font-semibold text-sm text-muted-foreground">{title}</h3>
+          <span className="text-xs text-muted-foreground">{goals.length} meta(s)</span>
+          <ChevronDown className="w-4 h-4 ml-auto text-muted-foreground transition-transform duration-200" />
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="space-y-3 min-h-[200px]">
+            {goals.length > 0 ? (
+              goals.map(goal => (
+                <GoalCard
+                  key={goal.id}
+                  goal={goal}
+                  onEdit={handleEditGoal}
+                />
+              ))
+            ) : (
+              <div className="flex items-center justify-center h-[200px] text-muted-foreground text-sm">
+                Nenhuma meta
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   );
 
