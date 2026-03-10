@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Target, Flame, CheckCircle2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -19,29 +19,50 @@ function getDayOfWeekFromDate(date: Date): DayOfWeek {
   return map[date.getDay()];
 }
 
-function getDateForDayInCurrentWeek(day: DayOfWeek): string {
-  const now = new Date();
-  const currentDayIndex = now.getDay(); // 0=Sun
-  const targetIndex = allDays.indexOf(day) + 1; // 1=Mon
-  const adjustedTarget = targetIndex === 7 ? 0 : targetIndex;
-  const diff = adjustedTarget - currentDayIndex;
-  const target = new Date(now);
-  target.setDate(now.getDate() + diff);
-  return target.toISOString().split('T')[0];
+function getDaysInMonth(year: number, month: number) {
+  const days: Date[] = [];
+  const count = new Date(year, month + 1, 0).getDate();
+  for (let d = 1; d <= count; d++) {
+    days.push(new Date(year, month, d));
+  }
+  return days;
 }
+
+function formatDateStr(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
+const shortDayLabels: Record<number, string> = {
+  0: 'Dom', 1: 'Seg', 2: 'Ter', 3: 'Qua', 4: 'Qui', 5: 'Sex', 6: 'Sáb',
+};
 
 export default function HabitsPage() {
   const today = new Date();
-  const todayDay = getDayOfWeekFromDate(today);
-  const [selectedDay, setSelectedDay] = useState<DayOfWeek>(todayDay);
+  today.setHours(0, 0, 0, 0);
+  const [selectedDate, setSelectedDate] = useState<Date>(today);
+  const selectedDay = getDayOfWeekFromDate(selectedDate);
+  const dateStr = formatDateStr(selectedDate);
+
   const [newHabitTitle, setNewHabitTitle] = useState('');
-  const [selectedDaysForNew, setSelectedDaysForNew] = useState<DayOfWeek[]>([todayDay]);
+  const [selectedDaysForNew, setSelectedDaysForNew] = useState<DayOfWeek[]>([getDayOfWeekFromDate(today)]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const dateScrollRef = useRef<HTMLDivElement>(null);
 
   const { getHabitsForDay, toggleCompletion, isCompleted, addHabit, removeHabit } = useHabitStore();
 
   const habits = getHabitsForDay(selectedDay);
-  const dateStr = getDateForDayInCurrentWeek(selectedDay);
+
+  const monthDays = useMemo(() => getDaysInMonth(today.getFullYear(), today.getMonth()), []);
+
+  // Scroll to selected date on mount
+  useEffect(() => {
+    const el = dateScrollRef.current;
+    if (!el) return;
+    const activeBtn = el.querySelector('[data-active="true"]') as HTMLElement;
+    if (activeBtn) {
+      activeBtn.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+    }
+  }, []);
 
   const completedCount = habits.filter((h) => isCompleted(h.id, dateStr)).length;
   const progress = habits.length > 0 ? Math.round((completedCount / habits.length) * 100) : 0;
@@ -50,7 +71,7 @@ export default function HabitsPage() {
     if (!newHabitTitle.trim() || selectedDaysForNew.length === 0) return;
     addHabit(newHabitTitle.trim(), selectedDaysForNew);
     setNewHabitTitle('');
-    setSelectedDaysForNew([todayDay]);
+    setSelectedDaysForNew([getDayOfWeekFromDate(today)]);
     setShowAddForm(false);
   };
 
@@ -59,6 +80,12 @@ export default function HabitsPage() {
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
     );
   };
+
+  const handleSelectDate = (date: Date) => {
+    setSelectedDate(date);
+  };
+
+  const todayStr = formatDateStr(today);
 
   return (
     <MainLayout>
@@ -99,25 +126,73 @@ export default function HabitsPage() {
           </GlassCard>
         </div>
 
-        {/* Day filter */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-          {allDays.map((day) => (
-            <button
-              key={day}
-              onClick={() => setSelectedDay(day)}
-              className={cn(
-                'flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200',
-                selectedDay === day
-                  ? 'bg-primary text-primary-foreground shadow-lg neon-glow-primary'
-                  : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
-              )}
-            >
-              {dayLabels[day].slice(0, 3)}
-              {day === todayDay && (
-                <span className="ml-1 text-[10px] opacity-70">•</span>
-              )}
-            </button>
-          ))}
+        {/* Weekday indicators + scrollable date strip */}
+        <div className="space-y-3">
+          {/* Weekday buttons */}
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {allDays.map((day) => (
+              <button
+                key={day}
+                onClick={() => {
+                  // Find the nearest date in the month for this weekday
+                  const targetDayIndex = allDays.indexOf(day);
+                  const jsDay = targetDayIndex === 6 ? 0 : targetDayIndex + 1;
+                  // Find closest date to selectedDate with this weekday
+                  const current = new Date(selectedDate);
+                  const currentJs = current.getDay();
+                  let diff = jsDay - currentJs;
+                  if (diff > 3) diff -= 7;
+                  if (diff < -3) diff += 7;
+                  const target = new Date(current);
+                  target.setDate(current.getDate() + diff);
+                  // Clamp to current month
+                  if (target.getMonth() === today.getMonth() && target.getFullYear() === today.getFullYear()) {
+                    handleSelectDate(target);
+                  }
+                }}
+                className={cn(
+                  'flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200',
+                  selectedDay === day
+                    ? 'bg-primary text-primary-foreground shadow-lg neon-glow-primary'
+                    : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                )}
+              >
+                {dayLabels[day].slice(0, 3)}
+              </button>
+            ))}
+          </div>
+
+          {/* Date strip */}
+          <div
+            ref={dateScrollRef}
+            className="flex gap-2 overflow-x-auto pb-2 scrollbar-none"
+          >
+            {monthDays.map((date) => {
+              const ds = formatDateStr(date);
+              const isSelected = ds === dateStr;
+              const isToday = ds === todayStr;
+              return (
+                <button
+                  key={ds}
+                  data-active={isSelected ? 'true' : undefined}
+                  onClick={() => handleSelectDate(date)}
+                  className={cn(
+                    'flex-shrink-0 flex flex-col items-center min-w-[44px] px-2 py-2 rounded-xl text-xs font-medium transition-all duration-200',
+                    isSelected
+                      ? 'bg-primary text-primary-foreground shadow-lg neon-glow-primary'
+                      : isToday
+                        ? 'bg-primary/20 text-primary border border-primary/40'
+                        : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                  )}
+                >
+                  <span className="text-[10px] opacity-70">
+                    {shortDayLabels[date.getDay()]}
+                  </span>
+                  <span className="text-sm font-semibold">{date.getDate()}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Progress bar */}
