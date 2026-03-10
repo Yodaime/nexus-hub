@@ -71,7 +71,7 @@ export default function HabitsPage() {
     if (!newHabitTitle.trim() || selectedDaysForNew.length === 0) return;
     addHabit(newHabitTitle.trim(), selectedDaysForNew);
     setNewHabitTitle('');
-    setSelectedDaysForNew([todayDay]);
+    setSelectedDaysForNew([getDayOfWeekFromDate(today)]);
     setShowAddForm(false);
   };
 
@@ -80,6 +80,12 @@ export default function HabitsPage() {
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
     );
   };
+
+  const handleSelectDate = (date: Date) => {
+    setSelectedDate(date);
+  };
+
+  const todayStr = formatDateStr(today);
 
   return (
     <MainLayout>
@@ -120,25 +126,73 @@ export default function HabitsPage() {
           </GlassCard>
         </div>
 
-        {/* Day filter */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-          {allDays.map((day) => (
-            <button
-              key={day}
-              onClick={() => setSelectedDay(day)}
-              className={cn(
-                'flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200',
-                selectedDay === day
-                  ? 'bg-primary text-primary-foreground shadow-lg neon-glow-primary'
-                  : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
-              )}
-            >
-              {dayLabels[day].slice(0, 3)}
-              {day === todayDay && (
-                <span className="ml-1 text-[10px] opacity-70">•</span>
-              )}
-            </button>
-          ))}
+        {/* Weekday indicators + scrollable date strip */}
+        <div className="space-y-3">
+          {/* Weekday buttons */}
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {allDays.map((day) => (
+              <button
+                key={day}
+                onClick={() => {
+                  // Find the nearest date in the month for this weekday
+                  const targetDayIndex = allDays.indexOf(day);
+                  const jsDay = targetDayIndex === 6 ? 0 : targetDayIndex + 1;
+                  // Find closest date to selectedDate with this weekday
+                  const current = new Date(selectedDate);
+                  const currentJs = current.getDay();
+                  let diff = jsDay - currentJs;
+                  if (diff > 3) diff -= 7;
+                  if (diff < -3) diff += 7;
+                  const target = new Date(current);
+                  target.setDate(current.getDate() + diff);
+                  // Clamp to current month
+                  if (target.getMonth() === today.getMonth() && target.getFullYear() === today.getFullYear()) {
+                    handleSelectDate(target);
+                  }
+                }}
+                className={cn(
+                  'flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200',
+                  selectedDay === day
+                    ? 'bg-primary text-primary-foreground shadow-lg neon-glow-primary'
+                    : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                )}
+              >
+                {dayLabels[day].slice(0, 3)}
+              </button>
+            ))}
+          </div>
+
+          {/* Date strip */}
+          <div
+            ref={dateScrollRef}
+            className="flex gap-2 overflow-x-auto pb-2 scrollbar-none"
+          >
+            {monthDays.map((date) => {
+              const ds = formatDateStr(date);
+              const isSelected = ds === dateStr;
+              const isToday = ds === todayStr;
+              return (
+                <button
+                  key={ds}
+                  data-active={isSelected ? 'true' : undefined}
+                  onClick={() => handleSelectDate(date)}
+                  className={cn(
+                    'flex-shrink-0 flex flex-col items-center min-w-[44px] px-2 py-2 rounded-xl text-xs font-medium transition-all duration-200',
+                    isSelected
+                      ? 'bg-primary text-primary-foreground shadow-lg neon-glow-primary'
+                      : isToday
+                        ? 'bg-primary/20 text-primary border border-primary/40'
+                        : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                  )}
+                >
+                  <span className="text-[10px] opacity-70">
+                    {shortDayLabels[date.getDay()]}
+                  </span>
+                  <span className="text-sm font-semibold">{date.getDate()}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Progress bar */}
