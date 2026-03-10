@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
-import { Plus, Bell, BellRing, Clock, CheckCircle2, Trash2 } from 'lucide-react';
+import { Plus, Bell, BellRing, Clock, CheckCircle2, Trash2, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { v4 as uuidv4 } from 'uuid';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { GlassCard } from '@/components/ui/glass-card';
