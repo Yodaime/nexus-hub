@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, GripVertical, Clock, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Plus, GripVertical, Clock, AlertTriangle, CheckCircle2, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ptBR } from 'date-fns/locale';
 
 import { MainLayout } from '@/components/layout/MainLayout';
