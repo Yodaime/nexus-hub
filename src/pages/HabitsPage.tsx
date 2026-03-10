@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Target, Flame, CheckCircle2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -19,29 +19,50 @@ function getDayOfWeekFromDate(date: Date): DayOfWeek {
   return map[date.getDay()];
 }
 
-function getDateForDayInCurrentWeek(day: DayOfWeek): string {
-  const now = new Date();
-  const currentDayIndex = now.getDay(); // 0=Sun
-  const targetIndex = allDays.indexOf(day) + 1; // 1=Mon
-  const adjustedTarget = targetIndex === 7 ? 0 : targetIndex;
-  const diff = adjustedTarget - currentDayIndex;
-  const target = new Date(now);
-  target.setDate(now.getDate() + diff);
-  return target.toISOString().split('T')[0];
+function getDaysInMonth(year: number, month: number) {
+  const days: Date[] = [];
+  const count = new Date(year, month + 1, 0).getDate();
+  for (let d = 1; d <= count; d++) {
+    days.push(new Date(year, month, d));
+  }
+  return days;
 }
+
+function formatDateStr(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
+const shortDayLabels: Record<number, string> = {
+  0: 'Dom', 1: 'Seg', 2: 'Ter', 3: 'Qua', 4: 'Qui', 5: 'Sex', 6: 'Sáb',
+};
 
 export default function HabitsPage() {
   const today = new Date();
-  const todayDay = getDayOfWeekFromDate(today);
-  const [selectedDay, setSelectedDay] = useState<DayOfWeek>(todayDay);
+  today.setHours(0, 0, 0, 0);
+  const [selectedDate, setSelectedDate] = useState<Date>(today);
+  const selectedDay = getDayOfWeekFromDate(selectedDate);
+  const dateStr = formatDateStr(selectedDate);
+
   const [newHabitTitle, setNewHabitTitle] = useState('');
-  const [selectedDaysForNew, setSelectedDaysForNew] = useState<DayOfWeek[]>([todayDay]);
+  const [selectedDaysForNew, setSelectedDaysForNew] = useState<DayOfWeek[]>([getDayOfWeekFromDate(today)]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const dateScrollRef = useRef<HTMLDivElement>(null);
 
   const { getHabitsForDay, toggleCompletion, isCompleted, addHabit, removeHabit } = useHabitStore();
 
   const habits = getHabitsForDay(selectedDay);
-  const dateStr = getDateForDayInCurrentWeek(selectedDay);
+
+  const monthDays = useMemo(() => getDaysInMonth(today.getFullYear(), today.getMonth()), []);
+
+  // Scroll to selected date on mount
+  useEffect(() => {
+    const el = dateScrollRef.current;
+    if (!el) return;
+    const activeBtn = el.querySelector('[data-active="true"]') as HTMLElement;
+    if (activeBtn) {
+      activeBtn.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+    }
+  }, []);
 
   const completedCount = habits.filter((h) => isCompleted(h.id, dateStr)).length;
   const progress = habits.length > 0 ? Math.round((completedCount / habits.length) * 100) : 0;
