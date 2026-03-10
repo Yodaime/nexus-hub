@@ -161,7 +161,7 @@ export default function RemindersPage() {
                                 {isOverdue && <span className="ml-1 font-medium">(Atrasado)</span>}
                               </p>
                             </div>
-                            <Button variant="ghost" size="icon" onClick={() => deleteReminder(reminder.id)} className="shrink-0 text-muted-foreground hover:text-destructive">
+                            <Button variant="ghost" size="icon" onClick={() => handleDelete(reminder.id)} className="shrink-0 text-muted-foreground hover:text-destructive">
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </GlassCard>
