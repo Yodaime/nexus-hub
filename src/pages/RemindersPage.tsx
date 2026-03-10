@@ -202,7 +202,7 @@ export default function RemindersPage() {
                               {format(new Date(reminder.dateTime), "dd 'de' MMM, yyyy 'às' HH:mm", { locale: ptBR })}
                             </p>
                           </div>
-                          <Button variant="ghost" size="icon" onClick={() => deleteReminder(reminder.id)} className="shrink-0 text-muted-foreground hover:text-destructive">
+                          <Button variant="ghost" size="icon" onClick={() => handleDelete(reminder.id)} className="shrink-0 text-muted-foreground hover:text-destructive">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </GlassCard>
