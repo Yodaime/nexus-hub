@@ -7,7 +7,9 @@ import {
   Wallet,
   Download,
   ArrowUpDown,
+  PiggyBank,
 } from 'lucide-react';
+
 import {
   PieChart,
   Pie,
