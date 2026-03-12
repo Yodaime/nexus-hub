@@ -52,5 +52,24 @@ export interface Goal {
   updatedAt: string;
 }
 
+// Savings Box types
+export interface SavingsBox {
+  id: string;
+  name: string;
+  targetAmount: number;
+  currentAmount: number;
+  icon: string;
+  color: string;
+  createdAt: string;
+  deposits: SavingsDeposit[];
+}
+
+export interface SavingsDeposit {
+  id: string;
+  amount: number;
+  date: string;
+  note?: string;
+}
+
 // App types
 export type Module = 'tasks' | 'finances';
