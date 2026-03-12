@@ -367,6 +367,10 @@ export default function FinancesPage() {
         onClose={handleCloseModal}
         transaction={editingTransaction}
       />
+      <SavingsBoxModal
+        isOpen={isSavingsModalOpen}
+        onClose={() => setIsSavingsModalOpen(false)}
+      />
     </MainLayout>
   );
 }
