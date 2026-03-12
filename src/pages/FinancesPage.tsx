@@ -48,7 +48,9 @@ import {
 
 export default function FinancesPage() {
   const { transactions, categories, getTotalByType, getBalance } = useFinanceStore();
+  const { boxes } = useSavingsStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSavingsModalOpen, setIsSavingsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [periodFilter, setPeriodFilter] = useState('month');
 
