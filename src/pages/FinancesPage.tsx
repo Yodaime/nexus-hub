@@ -167,6 +167,10 @@ export default function FinancesPage() {
               <Download className="w-4 h-4" />
               Exportar
             </Button>
+            <Button variant="outline" onClick={() => setIsSavingsModalOpen(true)} className="flex-1 sm:flex-none">
+              <PiggyBank className="w-4 h-4" />
+              Caixinhas
+            </Button>
             <Button variant="neon" onClick={() => setIsModalOpen(true)} className="flex-1 sm:flex-none">
               <Plus className="w-4 h-4" />
               Nova Transação
