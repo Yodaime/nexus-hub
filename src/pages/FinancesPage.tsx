@@ -7,7 +7,9 @@ import {
   Wallet,
   Download,
   ArrowUpDown,
+  PiggyBank,
 } from 'lucide-react';
+
 import {
   PieChart,
   Pie,
@@ -32,7 +34,10 @@ import { Button } from '@/components/ui/button';
 import { TransactionCard } from '@/components/finances/TransactionCard';
 import { TransactionModal } from '@/components/finances/TransactionModal';
 import { useFinanceStore } from '@/stores/financeStore';
+import { useSavingsStore } from '@/stores/savingsStore';
 import { Transaction } from '@/types';
+import { SavingsBoxModal } from '@/components/finances/SavingsBoxModal';
+import { SavingsBoxCard } from '@/components/finances/SavingsBoxCard';
 import {
   Select,
   SelectContent,
@@ -43,7 +48,9 @@ import {
 
 export default function FinancesPage() {
   const { transactions, categories, getTotalByType, getBalance } = useFinanceStore();
+  const { boxes } = useSavingsStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSavingsModalOpen, setIsSavingsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [periodFilter, setPeriodFilter] = useState('month');
 
@@ -159,6 +166,10 @@ export default function FinancesPage() {
             <Button variant="outline" onClick={exportData} className="flex-1 sm:flex-none">
               <Download className="w-4 h-4" />
               Exportar
+            </Button>
+            <Button variant="outline" onClick={() => setIsSavingsModalOpen(true)} className="flex-1 sm:flex-none">
+              <PiggyBank className="w-4 h-4" />
+              Caixinhas
             </Button>
             <Button variant="neon" onClick={() => setIsModalOpen(true)} className="flex-1 sm:flex-none">
               <Plus className="w-4 h-4" />
@@ -285,6 +296,23 @@ export default function FinancesPage() {
           </GlassCard>
         </div>
 
+        {/* Savings Boxes */}
+        {boxes.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-xl font-semibold flex items-center gap-2">
+              <PiggyBank className="w-5 h-5 text-primary" />
+              Caixinhas
+            </h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <AnimatePresence mode="popLayout">
+                {boxes.map((box) => (
+                  <SavingsBoxCard key={box.id} box={box} />
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
+
         {/* Transactions Header */}
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold">Transações Recentes</h3>
@@ -338,6 +366,10 @@ export default function FinancesPage() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         transaction={editingTransaction}
+      />
+      <SavingsBoxModal
+        isOpen={isSavingsModalOpen}
+        onClose={() => setIsSavingsModalOpen(false)}
       />
     </MainLayout>
   );
