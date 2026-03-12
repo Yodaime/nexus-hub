@@ -34,7 +34,10 @@ import { Button } from '@/components/ui/button';
 import { TransactionCard } from '@/components/finances/TransactionCard';
 import { TransactionModal } from '@/components/finances/TransactionModal';
 import { useFinanceStore } from '@/stores/financeStore';
+import { useSavingsStore } from '@/stores/savingsStore';
 import { Transaction } from '@/types';
+import { SavingsBoxModal } from '@/components/finances/SavingsBoxModal';
+import { SavingsBoxCard } from '@/components/finances/SavingsBoxCard';
 import {
   Select,
   SelectContent,
