@@ -296,6 +296,23 @@ export default function FinancesPage() {
           </GlassCard>
         </div>
 
+        {/* Savings Boxes */}
+        {boxes.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-xl font-semibold flex items-center gap-2">
+              <PiggyBank className="w-5 h-5 text-primary" />
+              Caixinhas
+            </h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <AnimatePresence mode="popLayout">
+                {boxes.map((box) => (
+                  <SavingsBoxCard key={box.id} box={box} />
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
+
         {/* Transactions Header */}
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold">Transações Recentes</h3>
