@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   CheckSquare,
@@ -11,9 +11,11 @@ import {
   Sparkles,
   Repeat,
   Target,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { authService } from '@/services/authService';
 
 const navItems = [
   { title: 'Tarefas', icon: CheckSquare, path: '/' },
@@ -27,6 +29,12 @@ const navItems = [
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await authService.logout();
+    navigate('/login');
+  };
 
   return (
     <>
