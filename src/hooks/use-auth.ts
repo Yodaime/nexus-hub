@@ -10,14 +10,17 @@ export function useAuth() {
     // Obter usuário atual inicialmente
     const initializeAuth = async () => {
       try {
+        console.log("🔄 Inicializando autenticação...");
         const {
           data: { user: authUser },
         } = await supabase.auth.getUser();
 
         if (authUser) {
+          console.log("✅ Usuário encontrado:", authUser.email);
           const currentUser = await authService.getCurrentUser();
           setUser(currentUser);
         } else {
+          console.log("❌ Nenhum usuário autenticado");
           setUser(null);
         }
       } catch (error) {
@@ -34,6 +37,7 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("🔔 Auth state changed:", event);
       if (session?.user) {
         try {
           const currentUser = await authService.getCurrentUser();

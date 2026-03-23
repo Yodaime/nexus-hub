@@ -31,7 +31,16 @@ export const authService = {
           full_name: fullName,
         });
 
-        if (userError) throw userError;
+        if (userError) {
+          console.error("Erro ao inserir usuário na tabela:", userError);
+          // Se a tabela não existe, informar ao usuário
+          if (userError.message?.includes("does not exist")) {
+            throw new Error(
+              "⚠️ Erro: Banco de dados não está configurado. Execute o SQL em Supabase primeiro (SQL_SETUP_REQUIRED.md)"
+            );
+          }
+          throw userError;
+        }
       }
 
       toast.success("Usuário registrado com sucesso!");
@@ -39,6 +48,7 @@ export const authService = {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Erro ao registrar";
+      console.error("Erro no signup:", message);
       toast.error(message);
       throw error;
     }
@@ -47,18 +57,31 @@ export const authService = {
   // Login
   async login(email: string, password: string) {
     try {
+      console.log("🔐 Tentando fazer login com:", email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("❌ Erro de login:", error);
+        // Verificar se é um erro comum
+        if (error.message?.includes("Invalid login")) {
+          throw new Error("Email ou senha incorretos");
+        }
+        if (error.message?.includes("User not found")) {
+          throw new Error("Usuário não encontrado. Registre-se primeiro!");
+        }
+        throw error;
+      }
 
+      console.log("✅ Login realizado com sucesso!");
       toast.success("Login realizado com sucesso!");
       return data.user;
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Erro ao fazer login";
+      console.error("Erro no login:", message);
       toast.error(message);
       throw error;
     }
