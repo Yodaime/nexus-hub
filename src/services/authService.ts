@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { initializeUserData } from "./dataService";
 
 export interface AuthUser {
   id: string;
@@ -41,6 +42,11 @@ export const authService = {
           }
           throw userError;
         }
+
+        // Inicializar dados zerados para o novo usuário
+        console.log('[signup] Inicializando dados zerados para o usuário:', authData.user.id);
+        await initializeUserData(authData.user.id);
+        console.log('[signup] Dados zerados inicializados com sucesso para o usuário:', authData.user.id);
       }
 
       toast.success("Usuário registrado com sucesso!");
@@ -127,16 +133,18 @@ export const authService = {
           };
         }
       } catch (error) {
-        console.log("Usuário não encontrado na tabela users, usando dados do Auth");
+        // Se der erro, loga mas não trava
+        console.log("Usuário não encontrado na tabela users ou erro, usando dados do Auth", error);
       }
 
       // Se não encontrar na tabela, retornar dados do Auth
       return {
         id: user.id,
         email: user.email || "",
-        full_name: user.user_metadata?.full_name,
+        full_name: user.user_metadata?.full_name || "",
       };
     } catch (error) {
+      // Nunca trava o fluxo, retorna null apenas se não houver usuário
       console.error("Erro ao obter usuário atual:", error);
       return null;
     }

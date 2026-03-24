@@ -1,3 +1,29 @@
+// Inicializa dados zerados para novo usuário
+export async function initializeUserData(userId: string) {
+  try {
+    // Exemplo: inserir categorias default de finanças (opcional)
+    const defaultCategories = [
+      { name: 'Alimentação', icon: 'Utensils', color: '#ff6b6b', type: 'expense', user_id: userId },
+      { name: 'Transporte', icon: 'Car', color: '#4ecdc4', type: 'expense', user_id: userId },
+      { name: 'Lazer', icon: 'Gamepad2', color: '#9d4edd', type: 'expense', user_id: userId },
+      { name: 'Saúde', icon: 'Heart', color: '#f472b6', type: 'expense', user_id: userId },
+      { name: 'Educação', icon: 'GraduationCap', color: '#00d4ff', type: 'expense', user_id: userId },
+      { name: 'Moradia', icon: 'Home', color: '#fbbf24', type: 'expense', user_id: userId },
+      { name: 'Salário', icon: 'Wallet', color: '#22c55e', type: 'income', user_id: userId },
+      { name: 'Freelance', icon: 'Laptop', color: '#06b6d4', type: 'income', user_id: userId },
+      { name: 'Investimentos', icon: 'TrendingUp', color: '#8b5cf6', type: 'income', user_id: userId },
+    ];
+    // Tenta inserir categorias default (ignora erro se tabela não existir)
+    const { error } = await supabase.from('categories').insert(defaultCategories);
+    if (error) {
+      console.warn('Não foi possível inserir categorias default para o usuário:', error.message);
+    }
+  } catch (e) {
+    console.warn('Erro inesperado ao inicializar dados do usuário:', e);
+  }
+  // Sempre retorna para não travar o fluxo
+  return;
+}
 import { supabase } from "@/integrations/supabase/client";
 
 export interface Task {
