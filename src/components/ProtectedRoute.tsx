@@ -1,13 +1,13 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuthContext();
 
   if (loading) {
     return (
