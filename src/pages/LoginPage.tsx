@@ -18,7 +18,7 @@ export default function LoginPage() {
   // Se já está autenticado, redirecionar
   useEffect(() => {
     if (user) {
-      navigate("/", { replace: true });
+      navigate("/organize", { replace: true });
     }
   }, [user, navigate]);
 
