@@ -139,6 +139,7 @@ export function GoalModal({ isOpen, onClose, goal }: GoalModalProps) {
                       <SelectContent>
                         <SelectItem value="daily">Diária</SelectItem>
                         <SelectItem value="weekly">Semanal</SelectItem>
+                        <SelectItem value="monthly">Mensal</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

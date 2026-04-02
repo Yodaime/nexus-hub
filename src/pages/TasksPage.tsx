@@ -8,6 +8,7 @@ import {
   ListTodo,
   TrendingUp,
   Flame,
+  Download,
 } from 'lucide-react';
 import {
   PieChart,
@@ -30,6 +31,7 @@ import { StatCard } from '@/components/ui/stat-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TaskModal } from '@/components/tasks/TaskModal';
+import { exportTasksStatusReport } from '@/components/tasks/exportTasksStatusReport';
 import { UrgentTasksView } from '@/components/tasks/UrgentTasksView';
 import { PendingTasksView } from '@/components/tasks/PendingTasksView';
 import { CompletedTasksView } from '@/components/tasks/CompletedTasksView';
@@ -57,6 +59,20 @@ export default function TasksPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [activeTab, setActiveTab] = useState('urgent');
+
+  // Função para exportar relatório CSV
+  const handleExportReport = () => {
+    const csv = exportTasksStatusReport(tasks);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `relatorio_tarefas_${new Date().toISOString().slice(0,7)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   // Stats
   const stats = useMemo(() => {
@@ -157,10 +173,16 @@ export default function TasksPage() {
               Gerencie suas tarefas e acompanhe o progresso
             </p>
           </div>
-          <Button variant="neon" onClick={() => setIsModalOpen(true)} className="w-full sm:w-auto">
-            <Plus className="w-4 h-4" />
-            Nova Tarefa
-          </Button>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="outline" onClick={handleExportReport} className="flex-1 sm:flex-none">
+              <Download className="w-4 h-4" />
+              Exportar Relatório
+            </Button>
+            <Button variant="neon" onClick={() => setIsModalOpen(true)} className="flex-1 sm:flex-none">
+              <Plus className="w-4 h-4" />
+              Nova Tarefa
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}

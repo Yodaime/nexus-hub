@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Edit2, Trash2, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { Edit2, Trash2, CheckCircle2, Clock, AlertCircle, Flag } from 'lucide-react';
 import { Goal } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useGoalStore } from '@/stores/goalStore';
@@ -34,6 +34,7 @@ export function GoalCard({ goal, onEdit }: GoalCardProps) {
   const frequencyLabels = {
     'daily': 'Diária',
     'weekly': 'Semanal',
+    'monthly': 'Mensal',
   };
 
   return (
@@ -44,16 +45,42 @@ export function GoalCard({ goal, onEdit }: GoalCardProps) {
       exit={{ opacity: 0, y: -20 }}
       className="bg-gradient-to-br from-secondary/10 to-primary/5 border border-secondary/20 rounded-lg p-4 space-y-3 hover:border-secondary/40 transition-colors"
     >
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
           <h3 className="font-semibold text-foreground">{goal.title}</h3>
           {goal.description && (
             <p className="text-sm text-muted-foreground mt-1">{goal.description}</p>
           )}
         </div>
-        <span className={cn('text-xs px-2 py-1 rounded-full', statusColors[goal.status])}>
-          {statusLabels[goal.status]}
-        </span>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            size="icon"
+            variant="ghost"
+            className={cn(
+              'h-8 w-8',
+              goal.status === 'completed' 
+                ? 'text-green-500 bg-green-500/20' 
+                : 'text-muted-foreground hover:text-secondary'
+            )}
+            onClick={() => {
+              if (goal.status === 'completed') {
+                useGoalStore.getState().moveGoal(goal.id, 'in-progress');
+              } else {
+                useGoalStore.getState().updateGoal(goal.id, {
+                  status: 'completed',
+                  completedAt: new Date().toISOString(),
+                  progress: 100,
+                });
+              }
+            }}
+            title={goal.status === 'completed' ? 'Desmarcar como concluído' : 'Marcar como concluído'}
+          >
+            <Flag className="h-4 w-4" fill={goal.status === 'completed' ? 'currentColor' : 'none'} />
+          </Button>
+          <span className={cn('text-xs px-2 py-1 rounded-full', statusColors[goal.status])}>
+            {statusLabels[goal.status]}
+          </span>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -68,7 +95,7 @@ export function GoalCard({ goal, onEdit }: GoalCardProps) {
       </div>
 
       {/* Progress Bar */}
-      <div className="space-y-1">
+      <div className="space-y-2">
         <div className="flex justify-between items-center">
           <span className="text-xs text-muted-foreground">Progresso</span>
           <span className="text-xs font-semibold text-secondary">{goal.progress}%</span>
@@ -81,6 +108,11 @@ export function GoalCard({ goal, onEdit }: GoalCardProps) {
             className="h-full bg-gradient-to-r from-secondary to-primary rounded-full"
           />
         </div>
+        {goal.completedAt && (
+          <p className="text-xs text-green-500 mt-1">
+            ✓ Realizado em {new Date(goal.completedAt).toLocaleDateString('pt-BR')}
+          </p>
+        )}
       </div>
 
       <div className="flex gap-2 pt-2">

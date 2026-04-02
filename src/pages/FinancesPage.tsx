@@ -33,6 +33,7 @@ import { StatCard } from '@/components/ui/stat-card';
 import { Button } from '@/components/ui/button';
 import { TransactionCard } from '@/components/finances/TransactionCard';
 import { TransactionModal } from '@/components/finances/TransactionModal';
+import { exportTransactionsReport } from '@/components/finances/exportTransactionsReport';
 import { useFinanceStore } from '@/stores/financeStore';
 import { useSavingsStore } from '@/stores/savingsStore';
 import { Transaction } from '@/types';
@@ -137,18 +138,16 @@ export default function FinancesPage() {
   };
 
   const exportData = () => {
-    const data = transactions.map((t) => ({
-      ...t,
-      category: categories.find((c) => c.id === t.categoryId)?.name || 'Sem categoria',
-    }));
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: 'application/json',
-    });
+    const csv = exportTransactionsReport(transactions, categories);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'transactions.json';
-    a.click();
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `relatorio_financeiro_${new Date().toISOString().slice(0,7)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (

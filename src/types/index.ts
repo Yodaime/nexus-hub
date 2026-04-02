@@ -36,7 +36,7 @@ export interface Transaction {
 }
 
 // Goal types
-export type GoalFrequency = 'daily' | 'weekly';
+export type GoalFrequency = 'daily' | 'weekly' | 'monthly';
 export type GoalStatus = 'not-started' | 'in-progress' | 'completed';
 
 export interface Goal {
@@ -48,6 +48,7 @@ export interface Goal {
   dueDate: string;
   progress: number; // 0-100
   category?: string;
+  completedAt?: string; // Data de conclusão
   createdAt: string;
   updatedAt: string;
 }

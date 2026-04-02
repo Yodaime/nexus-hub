@@ -137,13 +137,14 @@ export default function GoalsPage() {
           onValueChange={(value) => setSelectedFrequency(value as GoalFrequency)}
           className="w-full"
         >
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-md grid-cols-3">
             <TabsTrigger value="daily">Diárias</TabsTrigger>
             <TabsTrigger value="weekly">Semanais</TabsTrigger>
+            <TabsTrigger value="monthly">Mensais</TabsTrigger>
           </TabsList>
 
           {/* Kanban Board */}
-          <TabsContent value={selectedFrequency} className="mt-6">
+          <TabsContent value="daily" className="mt-6">
             <motion.div
               layout
               className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 md:overflow-x-visible md:mx-0 md:px-0"
@@ -151,17 +152,63 @@ export default function GoalsPage() {
               <KanbanColumn
                 status="not-started"
                 title="Não Iniciado"
-                goals={goalsByStatus['not-started']}
+                goals={goals.filter(g => g.frequency === 'daily' && g.status === 'not-started')}
               />
               <KanbanColumn
                 status="in-progress"
                 title="Em Progresso"
-                goals={goalsByStatus['in-progress']}
+                goals={goals.filter(g => g.frequency === 'daily' && g.status === 'in-progress')}
               />
               <KanbanColumn
                 status="completed"
                 title="Concluído"
-                goals={goalsByStatus['completed']}
+                goals={goals.filter(g => g.frequency === 'daily' && g.status === 'completed')}
+              />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="weekly" className="mt-6">
+            <motion.div
+              layout
+              className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 md:overflow-x-visible md:mx-0 md:px-0"
+            >
+              <KanbanColumn
+                status="not-started"
+                title="Não Iniciado"
+                goals={goals.filter(g => g.frequency === 'weekly' && g.status === 'not-started')}
+              />
+              <KanbanColumn
+                status="in-progress"
+                title="Em Progresso"
+                goals={goals.filter(g => g.frequency === 'weekly' && g.status === 'in-progress')}
+              />
+              <KanbanColumn
+                status="completed"
+                title="Concluído"
+                goals={goals.filter(g => g.frequency === 'weekly' && g.status === 'completed')}
+              />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="monthly" className="mt-6">
+            <motion.div
+              layout
+              className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 md:overflow-x-visible md:mx-0 md:px-0"
+            >
+              <KanbanColumn
+                status="not-started"
+                title="Não Iniciado"
+                goals={goals.filter(g => g.frequency === 'monthly' && g.status === 'not-started')}
+              />
+              <KanbanColumn
+                status="in-progress"
+                title="Em Progresso"
+                goals={goals.filter(g => g.frequency === 'monthly' && g.status === 'in-progress')}
+              />
+              <KanbanColumn
+                status="completed"
+                title="Concluído"
+                goals={goals.filter(g => g.frequency === 'monthly' && g.status === 'completed')}
               />
             </motion.div>
           </TabsContent>
