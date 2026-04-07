@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { AuthUser, authService } from "@/services/authService";
+import { AuthUser } from "@/services/authService";
 import { supabase } from "@/integrations/supabase/client";
 
 interface AuthContextType {
@@ -16,51 +16,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    // Inicializar autenticação apenas uma vez
-    const initializeAuth = async () => {
-      try {
-        console.log("🔄 [AuthContext] Inicializando autenticação...");
-        
-        const {
-          data: { user: authUser },
-        } = await supabase.auth.getUser();
-
-        if (authUser) {
-          console.log("✅ [AuthContext] Usuário encontrado:", authUser.email);
-          const currentUser = await authService.getCurrentUser();
-          setUser(currentUser);
-        } else {
-          console.log("❌ [AuthContext] Nenhum usuário autenticado");
-          setUser(null);
-        }
-      } catch (error) {
-        console.error("[AuthContext] Erro ao inicializar auth:", error);
-        setUser(null);
-      } finally {
-        setLoading(false);
-        setInitialized(true);
-      }
-    };
-
-    initializeAuth();
-
-    // Observar mudanças de autenticação em tempo real
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("🔔 [AuthContext] Auth state changed:", event);
+    // Use getSession() first — it restores from localStorage synchronously
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        try {
-          const currentUser = await authService.getCurrentUser();
-          setUser(currentUser);
-        } catch (error) {
-          console.error("[AuthContext] Erro ao obter usuário após auth change:", error);
-          setUser(null);
-        }
+        setUser({
+          id: session.user.id,
+          email: session.user.email || "",
+          full_name: session.user.user_metadata?.full_name || "",
+        });
       } else {
         setUser(null);
       }
+      setLoading(false);
+      setInitialized(true);
     });
+
+    // Listen for subsequent auth changes (sign in/out/token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email || "",
+            full_name: session.user.user_metadata?.full_name || "",
+          });
+        } else {
+          setUser(null);
+        }
+        setLoading(false);
+        setInitialized(true);
+      }
+    );
 
     return () => {
       subscription?.unsubscribe();
