@@ -24,6 +24,7 @@ const navItems = [
   { title: 'Lembretes', icon: Bell, path: '/reminders' },
   { title: 'Metas', icon: Target, path: '/goals' },
   { title: 'Organizar', icon: LayoutDashboard, path: '/organize' },
+  { title: 'Aprendizado', icon: Sparkles, path: '/learning' },
 ];
 
 export function AppSidebar() {
