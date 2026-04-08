@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, DollarSign, Calendar, FileText } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
@@ -34,6 +34,17 @@ export function TransactionModal({ isOpen, onClose, transaction }: TransactionMo
     description: transaction?.description || '',
     type: transaction?.type || 'expense' as TransactionType,
   });
+
+  // Atualiza o formData sempre que a transação mudar (edição)
+  useEffect(() => {
+    setFormData({
+      amount: transaction?.amount?.toString() || '',
+      categoryId: transaction?.categoryId || '',
+      date: transaction?.date ? new Date(transaction.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      description: transaction?.description || '',
+      type: transaction?.type || 'expense',
+    });
+  }, [transaction]);
 
   const filteredCategories = categories.filter((c) => c.type === formData.type);
 

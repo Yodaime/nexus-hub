@@ -29,6 +29,7 @@ const defaultCategories: Category[] = [
   { id: '7', name: 'Salário', icon: 'Wallet', color: '#22c55e', type: 'income' },
   { id: '8', name: 'Freelance', icon: 'Laptop', color: '#06b6d4', type: 'income' },
   { id: '9', name: 'Investimentos', icon: 'TrendingUp', color: '#8b5cf6', type: 'income' },
+  { id: '10', name: 'Renda Extra', icon: 'TrendingUp', color: '#54e2bf', type: 'income' },
 ];
 
 export const useFinanceStore = create<FinanceState>()(

@@ -1,4 +1,50 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
+// Utilitário para exportar CSV
+function exportHabitsCSV({
+  habits,
+  completions,
+  year,
+  month,
+}) {
+  // Gera todos os dias do mês
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const rows = [];
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    const dateStr = date.toISOString().split('T')[0];
+    // Para cada hábito ativo nesse dia da semana
+    const dayOfWeek = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][date.getDay()];
+    const habitsForDay = habits.filter(h => h.days.includes(dayOfWeek));
+    for (const habit of habitsForDay) {
+      const completed = completions.some(c => c.habitId === habit.id && c.date === dateStr);
+      rows.push({
+        date: dateStr,
+        habit: habit.title,
+        status: completed ? 'Concluído' : 'Não Concluído',
+      });
+    }
+  }
+  // Ordena: concluídos primeiro
+  rows.sort((a, b) => {
+    if (a.status === b.status) return 0;
+    return a.status === 'Concluído' ? -1 : 1;
+  });
+  // Monta CSV
+  let csv = 'Data,Hábito,Status\n';
+  for (const row of rows) {
+    csv += `${row.date},"${row.habit}",${row.status}\n`;
+  }
+  // Download
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `habitos_${year}_${String(month+1).padStart(2,'0')}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Target, Flame, CheckCircle2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -48,7 +94,7 @@ export default function HabitsPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const dateScrollRef = useRef<HTMLDivElement>(null);
 
-  const { getHabitsForDay, toggleCompletion, isCompleted, addHabit, removeHabit } = useHabitStore();
+  const { getHabitsForDay, toggleCompletion, isCompleted, addHabit, removeHabit, habits: allHabits, completions } = useHabitStore();
 
   const habits = getHabitsForDay(selectedDay);
 
@@ -87,24 +133,44 @@ export default function HabitsPage() {
 
   const todayStr = formatDateStr(today);
 
+  // Função para exportar CSV do mês atual
+  const handleExportHabits = () => {
+    const now = new Date();
+    exportHabitsCSV({
+      habits: allHabits,
+      completions,
+      year: now.getFullYear(),
+      month: now.getMonth(),
+    });
+  };
+
   return (
     <MainLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">Hábitos</h1>
             <p className="text-muted-foreground text-sm mt-1">
               Acompanhe seus hábitos diários
             </p>
           </div>
-          <Button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Novo Hábito
-          </Button>
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              onClick={handleExportHabits}
+              variant="outline"
+              className="bg-background border-primary text-primary hover:bg-primary/10"
+            >
+              Exportar Hábitos
+            </Button>
+            <Button
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Novo Hábito
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
