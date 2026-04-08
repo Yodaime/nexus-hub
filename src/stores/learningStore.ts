@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export interface LearningBlock {
   id: string;
@@ -14,37 +15,38 @@ interface LearningStore {
   deleteBlock: (id: string) => void;
 }
 
-export const useLearningStore = create<LearningStore>((set) => ({
-  blocks: [
+export const useLearningStore = create<LearningStore>()(
+  persist(
+    (set) => ({
+      blocks: [],
+
+      addBlock: (block) =>
+        set((state) => ({
+          blocks: [
+            ...state.blocks,
+            {
+              ...block,
+              id: Date.now().toString(),
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        })),
+
+      updateBlock: (id, updates) =>
+        set((state) => ({
+          blocks: state.blocks.map((block) =>
+            block.id === id ? { ...block, ...updates } : block
+          ),
+        })),
+
+      deleteBlock: (id) =>
+        set((state) => ({
+          blocks: state.blocks.filter((block) => block.id !== id),
+        })),
+    }),
     {
-      id: '1',
-      title: 'Exemplo de Aprendizado',
-      description: 'Este é um exemplo de bloco de aprendizado. Você pode adicionar anotações sobre o que está aprendendo.',
-      createdAt: new Date().toISOString(),
-    },
-  ],
-
-  addBlock: (block) =>
-    set((state) => ({
-      blocks: [
-        ...state.blocks,
-        {
-          ...block,
-          id: Date.now().toString(),
-          createdAt: new Date().toISOString(),
-        },
-      ],
-    })),
-
-  updateBlock: (id, updates) =>
-    set((state) => ({
-      blocks: state.blocks.map((block) =>
-        block.id === id ? { ...block, ...updates } : block
-      ),
-    })),
-
-  deleteBlock: (id) =>
-    set((state) => ({
-      blocks: state.blocks.filter((block) => block.id !== id),
-    })),
-}));
+      name: 'learning-store',
+      version: 1,
+    }
+  )
+);
