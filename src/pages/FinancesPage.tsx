@@ -371,13 +371,7 @@ export default function FinancesPage() {
         {/* Transactions Header */}
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold">Transações Recentes</h3>
-          <Select value={periodFilter} onValueChange={setPeriodFilter}>
-            <SelectTrigger className="w-40 bg-muted/50">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="week">Esta Semana</SelectItem>
-              <SelectItem value="month">Este Mês</SelectItem>
+        </div>
               <SelectItem value="year">Este Ano</SelectItem>
               <SelectItem value="all">Todas</SelectItem>
             </SelectContent>
