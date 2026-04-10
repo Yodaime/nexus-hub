@@ -55,17 +55,50 @@ export default function FinancesPage() {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [periodFilter, setPeriodFilter] = useState('month');
 
-  // Stats
-  const totalIncome = getTotalByType('income');
-  const totalExpense = getTotalByType('expense');
-  const balance = getBalance();
+  // Filter transactions by period
+  const filteredTransactions = useMemo(() => {
+    if (periodFilter === 'all') return transactions;
+    const now = new Date();
+    let start: Date, end: Date;
+    switch (periodFilter) {
+      case 'week':
+        start = startOfWeek(now, { weekStartsOn: 0 });
+        end = endOfWeek(now, { weekStartsOn: 0 });
+        break;
+      case 'month':
+        start = startOfMonth(now);
+        end = endOfMonth(now);
+        break;
+      case 'year':
+        start = startOfYear(now);
+        end = endOfYear(now);
+        break;
+      default:
+        return transactions;
+    }
+    return transactions.filter((t) => {
+      const d = new Date(t.date);
+      return isWithinInterval(d, { start, end });
+    });
+  }, [transactions, periodFilter]);
 
-  // Pie chart data (expenses by category)
+  // Stats based on filtered transactions
+  const totalIncome = useMemo(() =>
+    filteredTransactions.filter((t) => t.type === 'income').reduce((sum, t) => sum + t.amount, 0),
+    [filteredTransactions]
+  );
+  const totalExpense = useMemo(() =>
+    filteredTransactions.filter((t) => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0),
+    [filteredTransactions]
+  );
+  const balance = totalIncome - totalExpense;
+
+  // Pie chart data (expenses by category) — filtered
   const pieData = useMemo(() => {
     const expenseCategories = categories.filter((c) => c.type === 'expense');
     return expenseCategories
       .map((category) => {
-        const total = transactions
+        const total = filteredTransactions
           .filter((t) => t.categoryId === category.id && t.type === 'expense')
           .reduce((sum, t) => sum + t.amount, 0);
         return {
@@ -75,50 +108,62 @@ export default function FinancesPage() {
         };
       })
       .filter((d) => d.value > 0);
-  }, [transactions, categories]);
+  }, [filteredTransactions, categories]);
 
-  // Line chart data (cash flow)
+  // Line chart data (cash flow) — filtered
   const lineData = useMemo(() => {
     const now = new Date();
-    const start = startOfMonth(now);
-    const end = endOfMonth(now);
-    const days = eachDayOfInterval({ start, end });
+    let start: Date, end: Date;
+    switch (periodFilter) {
+      case 'week':
+        start = startOfWeek(now, { weekStartsOn: 0 });
+        end = endOfWeek(now, { weekStartsOn: 0 });
+        break;
+      case 'year':
+        start = startOfYear(now);
+        end = endOfYear(now);
+        break;
+      default:
+        start = startOfMonth(now);
+        end = endOfMonth(now);
+        break;
+    }
 
+    if (periodFilter === 'year') {
+      const months = eachMonthOfInterval({ start, end });
+      let cumulativeBalance = 0;
+      return months.map((month) => {
+        const monthTx = filteredTransactions.filter((t) => {
+          const d = new Date(t.date);
+          return d.getMonth() === month.getMonth() && d.getFullYear() === month.getFullYear();
+        });
+        const inc = monthTx.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+        const exp = monthTx.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+        cumulativeBalance += inc - exp;
+        return { day: format(month, 'MMM', { locale: ptBR }), saldo: cumulativeBalance, receitas: inc, despesas: exp };
+      });
+    }
+
+    const days = eachDayOfInterval({ start, end });
     let cumulativeBalance = 0;
     return days.map((day) => {
-      const dayTransactions = transactions.filter((t) => {
-        const tDate = new Date(t.date);
-        return (
-          tDate.getDate() === day.getDate() &&
-          tDate.getMonth() === day.getMonth() &&
-          tDate.getFullYear() === day.getFullYear()
-        );
+      const dayTx = filteredTransactions.filter((t) => {
+        const d = new Date(t.date);
+        return d.getDate() === day.getDate() && d.getMonth() === day.getMonth() && d.getFullYear() === day.getFullYear();
       });
-
-      const dayIncome = dayTransactions
-        .filter((t) => t.type === 'income')
-        .reduce((sum, t) => sum + t.amount, 0);
-      const dayExpense = dayTransactions
-        .filter((t) => t.type === 'expense')
-        .reduce((sum, t) => sum + t.amount, 0);
-
-      cumulativeBalance += dayIncome - dayExpense;
-
-      return {
-        day: format(day, 'dd', { locale: ptBR }),
-        saldo: cumulativeBalance,
-        receitas: dayIncome,
-        despesas: dayExpense,
-      };
+      const inc = dayTx.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+      const exp = dayTx.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+      cumulativeBalance += inc - exp;
+      return { day: format(day, 'dd', { locale: ptBR }), saldo: cumulativeBalance, receitas: inc, despesas: exp };
     });
-  }, [transactions]);
+  }, [filteredTransactions, periodFilter]);
 
-  // Sorted transactions
+  // Sorted filtered transactions
   const sortedTransactions = useMemo(() => {
-    return [...transactions].sort(
+    return [...filteredTransactions].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-  }, [transactions]);
+  }, [filteredTransactions]);
 
   const handleEdit = (transaction: Transaction) => {
     setEditingTransaction(transaction);
