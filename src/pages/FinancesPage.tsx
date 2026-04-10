@@ -257,8 +257,8 @@ export default function FinancesPage() {
         {/* Charts */}
         <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Expenses by Category */}
-          <GlassCard className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Despesas por Categoria</h3>
+          <GlassCard className="p-3 sm:p-6">
+            <h3 className="text-sm sm:text-lg font-semibold mb-4">Despesas por Categoria</h3>
             {pieData.length > 0 ? (
               <>
                 <ResponsiveContainer width="100%" height={220}>
@@ -306,8 +306,8 @@ export default function FinancesPage() {
           </GlassCard>
 
           {/* Cash Flow */}
-          <GlassCard className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Fluxo de Caixa Mensal</h3>
+          <GlassCard className="p-3 sm:p-6">
+            <h3 className="text-sm sm:text-lg font-semibold mb-4">Fluxo de Caixa</h3>
             <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={lineData}>
                 <defs>
