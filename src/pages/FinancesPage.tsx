@@ -372,11 +372,6 @@ export default function FinancesPage() {
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold">Transações Recentes</h3>
         </div>
-              <SelectItem value="year">Este Ano</SelectItem>
-              <SelectItem value="all">Todas</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
 
         {/* Transaction List */}
         <div className="space-y-3">
