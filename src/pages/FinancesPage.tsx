@@ -206,29 +206,28 @@ export default function FinancesPage() {
               Controle suas receitas e despesas
             </p>
           </div>
-          <div className="flex gap-2 w-full sm:w-auto flex-wrap">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Select value={periodFilter} onValueChange={setPeriodFilter}>
-              <SelectTrigger className="w-36 bg-muted/50">
+              <SelectTrigger className="w-[120px] sm:w-36 bg-muted/50 text-xs sm:text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="week">Esta Semana</SelectItem>
-                <SelectItem value="month">Este Mês</SelectItem>
-                <SelectItem value="year">Este Ano</SelectItem>
+                <SelectItem value="week">Semana</SelectItem>
+                <SelectItem value="month">Mês</SelectItem>
+                <SelectItem value="year">Ano</SelectItem>
                 <SelectItem value="all">Todas</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" onClick={exportData} className="flex-1 sm:flex-none">
+            <Button variant="outline" size="icon" onClick={exportData} className="shrink-0" title="Exportar">
               <Download className="w-4 h-4" />
-              Exportar
             </Button>
-            <Button variant="outline" onClick={() => setIsSavingsModalOpen(true)} className="flex-1 sm:flex-none">
+            <Button variant="outline" size="icon" onClick={() => setIsSavingsModalOpen(true)} className="shrink-0" title="Caixinhas">
               <PiggyBank className="w-4 h-4" />
-              Caixinhas
             </Button>
-            <Button variant="neon" onClick={() => setIsModalOpen(true)} className="flex-1 sm:flex-none">
+            <Button variant="neon" onClick={() => setIsModalOpen(true)} className="flex-1 sm:flex-none text-xs sm:text-sm">
               <Plus className="w-4 h-4" />
-              Nova Transação
+              <span className="hidden sm:inline">Nova Transação</span>
+              <span className="sm:hidden">Nova</span>
             </Button>
           </div>
         </div>
@@ -258,8 +257,8 @@ export default function FinancesPage() {
         {/* Charts */}
         <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Expenses by Category */}
-          <GlassCard className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Despesas por Categoria</h3>
+          <GlassCard className="p-3 sm:p-6">
+            <h3 className="text-sm sm:text-lg font-semibold mb-4">Despesas por Categoria</h3>
             {pieData.length > 0 ? (
               <>
                 <ResponsiveContainer width="100%" height={220}>
@@ -307,8 +306,8 @@ export default function FinancesPage() {
           </GlassCard>
 
           {/* Cash Flow */}
-          <GlassCard className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Fluxo de Caixa Mensal</h3>
+          <GlassCard className="p-3 sm:p-6">
+            <h3 className="text-sm sm:text-lg font-semibold mb-4">Fluxo de Caixa</h3>
             <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={lineData}>
                 <defs>
@@ -326,8 +325,10 @@ export default function FinancesPage() {
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#6b7280', fontSize: 12 }}
+                  tick={{ fill: '#6b7280', fontSize: 10 }}
                   tickFormatter={(value) => `R$${value}`}
+                  width={45}
+                  hide={window.innerWidth < 640}
                 />
                 <Tooltip
                   formatter={(value: number) => formatCurrency(value)}
