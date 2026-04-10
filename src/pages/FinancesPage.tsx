@@ -24,7 +24,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
-import { format, subDays, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { format, subDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfYear, endOfYear, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, isWithinInterval } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 import { MainLayout } from '@/components/layout/MainLayout';
