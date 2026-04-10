@@ -325,8 +325,10 @@ export default function FinancesPage() {
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#6b7280', fontSize: 12 }}
+                  tick={{ fill: '#6b7280', fontSize: 10 }}
                   tickFormatter={(value) => `R$${value}`}
+                  width={45}
+                  hide={window.innerWidth < 640}
                 />
                 <Tooltip
                   formatter={(value: number) => formatCurrency(value)}
