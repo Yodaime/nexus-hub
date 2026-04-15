@@ -198,30 +198,35 @@ export default function TasksPage() {
             value={stats.urgent}
             icon={<Flame className="w-4 h-4 sm:w-5 sm:h-5" />}
             variant="destructive"
+            onClick={() => setActiveTab('urgent')}
           />
           <StatCard
             title="Concluídas"
             value={stats.completed}
             icon={<CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />}
             variant="success"
+            onClick={() => setActiveTab('completed')}
           />
           <StatCard
             title="Em Andamento"
             value={stats.inProgress}
             icon={<Clock className="w-4 h-4 sm:w-5 sm:h-5" />}
             variant="primary"
+            onClick={() => setActiveTab('pending')}
           />
           <StatCard
             title="Pendentes"
             value={stats.pending}
             icon={<ListTodo className="w-4 h-4 sm:w-5 sm:h-5" />}
             variant="default"
+            onClick={() => setActiveTab('pending')}
           />
           <StatCard
             title="Atrasadas"
             value={stats.overdue}
             icon={<AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />}
             variant="destructive"
+            onClick={() => setActiveTab('pending')}
           />
         </div>
 

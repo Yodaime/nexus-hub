@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Bell, BellRing, Clock, CheckCircle2, Trash2, ChevronDown } from 'lucide-react';
+import { Plus, Bell, BellRing, Clock, CheckCircle2, Trash2, ChevronDown, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -13,13 +13,43 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useReminderStore } from '@/stores/reminderStore';
+import { useReminderNotifications } from '@/hooks/use-reminder-notifications';
+import { areNotificationsEnabled, requestNotificationPermission, sendNotification } from '@/services/notificationService';
 
 export default function RemindersPage() {
+  // Ativar sistema de notificações
+  useReminderNotifications();
+
   const { reminders, addReminder, toggleComplete, deleteReminder } = useReminderStore();
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dateTime, setDateTime] = useState('');
+  const [notificationsEnabled, setNotificationsEnabled] = useState(() => areNotificationsEnabled());
+
+  const handleEnableNotifications = async () => {
+    const permission = await requestNotificationPermission();
+    setNotificationsEnabled(permission);
+    if (permission) {
+      toast.success('Notificações ativadas! Você receberá notificações dos lembretes.');
+    } else {
+      toast.error('Não foi possível ativar notificações. Verifique as permissões do navegador.');
+    }
+  };
+
+  const handleTestNotification = () => {
+    if (!notificationsEnabled) {
+      toast.error('Ative as notificações primeiro');
+      return;
+    }
+    sendNotification({
+      title: '✨ Notificação de Teste',
+      body: 'Sistema de notificações funcionando corretamente!',
+      tag: 'test-notification',
+      requireInteraction: false,
+    });
+    toast.success('Notificação de teste enviada!');
+  };
 
   const stats = useMemo(() => {
     const now = new Date();
@@ -70,10 +100,27 @@ export default function RemindersPage() {
               Nunca esqueça de algo importante
             </p>
           </div>
-          <Button variant="neon" onClick={() => setIsAdding(true)} className="w-full sm:w-auto">
-            <Plus className="w-4 h-4" />
-            Novo Lembrete
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            {notificationsEnabled ? (
+              <Button variant="secondary" disabled className="w-full sm:w-auto">
+                <Check className="w-4 h-4" />
+                Notificações Ativas
+              </Button>
+            ) : (
+              <Button 
+                variant="outline" 
+                onClick={handleEnableNotifications}
+                className="w-full sm:w-auto"
+              >
+                <Bell className="w-4 h-4" />
+                Ativar Notificações
+              </Button>
+            )}
+            <Button variant="neon" onClick={() => setIsAdding(true)} className="w-full sm:w-auto">
+              <Plus className="w-4 h-4" />
+              Novo Lembrete
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -83,6 +130,34 @@ export default function RemindersPage() {
           <StatCard title="Atrasados" value={stats.overdue} icon={<BellRing className="w-5 h-5" />} variant="destructive" />
           <StatCard title="Concluídos" value={stats.completed} icon={<CheckCircle2 className="w-5 h-5" />} variant="success" />
         </div>
+
+        {/* Notification Status Card */}
+        {notificationsEnabled && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            <GlassCard className="p-4 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                  <div>
+                    <p className="font-medium text-sm">Notificações Ativas</p>
+                    <p className="text-xs text-muted-foreground">Você receberá notificações dos lembretes na hora marcada</p>
+                  </div>
+                </div>
+                <Button 
+                  size="sm"
+                  variant="outline" 
+                  onClick={handleTestNotification}
+                >
+                  Testar
+                </Button>
+              </div>
+            </GlassCard>
+          </motion.div>
+        )}
 
         {/* Add Form */}
         <AnimatePresence>

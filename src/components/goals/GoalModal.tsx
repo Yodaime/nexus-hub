@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Target, Calendar, FileText, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,29 @@ export function GoalModal({ isOpen, onClose, goal }: GoalModalProps) {
     progress: goal?.progress || 0,
     dueDate: goal?.dueDate ? new Date(goal.dueDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
   });
+
+  // Atualiza o formData sempre que a meta mudar (edição)
+  useEffect(() => {
+    if (goal) {
+      setFormData({
+        title: goal.title || '',
+        description: goal.description || '',
+        frequency: goal.frequency || 'daily',
+        category: goal.category || '',
+        progress: goal.progress || 0,
+        dueDate: goal.dueDate ? new Date(goal.dueDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      });
+    } else {
+      setFormData({
+        title: '',
+        description: '',
+        frequency: 'daily',
+        category: '',
+        progress: 0,
+        dueDate: new Date().toISOString().split('T')[0],
+      });
+    }
+  }, [goal]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

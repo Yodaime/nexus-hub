@@ -11,6 +11,7 @@ interface StatCardProps {
   };
   className?: string;
   variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'destructive';
+  onClick?: () => void;
 }
 
 export function StatCard({
@@ -21,6 +22,7 @@ export function StatCard({
   trend,
   className,
   variant = 'default',
+  onClick,
 }: StatCardProps) {
   const variantStyles = {
     default: 'border-border',
@@ -42,8 +44,10 @@ export function StatCard({
 
   return (
     <div
+      onClick={onClick}
       className={cn(
         'glass-card rounded-xl p-3 sm:p-5 border transition-all duration-300 hover:border-primary/30',
+        onClick && 'cursor-pointer hover:shadow-lg hover:shadow-primary/20',
         variantStyles[variant],
         className
       )}
