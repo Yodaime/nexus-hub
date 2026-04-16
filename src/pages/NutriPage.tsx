@@ -144,26 +144,26 @@ export default function NutriPage() {
           <StatCard
             title="Calorias"
             value={`${Math.round(totals.calories)} kcal`}
-            icon={Flame}
-            iconColor="text-orange-500"
+            icon={<Flame className="w-5 h-5" />}
+            variant="warning"
           />
           <StatCard
             title="Proteínas"
             value={`${totals.protein.toFixed(1)} g`}
-            icon={Beef}
-            iconColor="text-red-500"
+            icon={<Beef className="w-5 h-5" />}
+            variant="destructive"
           />
           <StatCard
             title="Carboidratos"
             value={`${totals.carbs.toFixed(1)} g`}
-            icon={Wheat}
-            iconColor="text-yellow-500"
+            icon={<Wheat className="w-5 h-5" />}
+            variant="warning"
           />
           <StatCard
             title="Gorduras"
             value={`${totals.fat.toFixed(1)} g`}
-            icon={Droplet}
-            iconColor="text-blue-500"
+            icon={<Droplet className="w-5 h-5" />}
+            variant="primary"
           />
         </div>
 
