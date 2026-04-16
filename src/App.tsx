@@ -12,6 +12,7 @@ import RemindersPage from "./pages/RemindersPage";
 import GoalsPage from "./pages/GoalsPage";
 import OrganizePage from "./pages/OrganizePage";
 import LearningPage from "./pages/LearningPage";
+import NutriPage from "./pages/NutriPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import NotFound from "./pages/NotFound";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/goals" element={<ProtectedRoute><GoalsPage /></ProtectedRoute>} />
             <Route path="/organize" element={<ProtectedRoute><OrganizePage /></ProtectedRoute>} />
             <Route path="/learning" element={<ProtectedRoute><LearningPage /></ProtectedRoute>} />
+            <Route path="/nutri" element={<ProtectedRoute><NutriPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

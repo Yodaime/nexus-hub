@@ -83,6 +83,60 @@ export type Database = {
         }
         Relationships: []
       }
+      foods: {
+        Row: {
+          calories: number
+          carbs: number
+          category: string
+          consumed_at: string
+          created_at: string
+          fat: number
+          id: string
+          meal: string
+          name: string
+          notes: string | null
+          protein: number
+          quantity: number
+          unit: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          calories?: number
+          carbs?: number
+          category?: string
+          consumed_at?: string
+          created_at?: string
+          fat?: number
+          id?: string
+          meal?: string
+          name: string
+          notes?: string | null
+          protein?: number
+          quantity?: number
+          unit?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          carbs?: number
+          category?: string
+          consumed_at?: string
+          created_at?: string
+          fat?: number
+          id?: string
+          meal?: string
+          name?: string
+          notes?: string | null
+          protein?: number
+          quantity?: number
+          unit?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       goals: {
         Row: {
           category: string | null

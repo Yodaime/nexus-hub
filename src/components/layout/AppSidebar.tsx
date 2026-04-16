@@ -12,6 +12,7 @@ import {
   Repeat,
   Target,
   LogOut,
+  Apple,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,7 @@ const navItems = [
   { title: 'Metas', icon: Target, path: '/goals' },
   { title: 'Organizar', icon: LayoutDashboard, path: '/organize' },
   { title: 'Aprendizado', icon: Sparkles, path: '/learning' },
+  { title: 'Nutri', icon: Apple, path: '/nutri' },
 ];
 
 export function AppSidebar() {
