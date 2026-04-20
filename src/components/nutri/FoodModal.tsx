@@ -97,8 +97,9 @@ export function FoodModal({ open, onClose, food }: FoodModalProps) {
         await updateFood(food.id, payload);
         toast.success('Alimento atualizado!');
       } else {
-        await addFood(payload);
-        toast.success('Alimento cadastrado!');
+        // Cadastros novos vão para o catálogo (template)
+        await addFood({ ...payload, is_template: true });
+        toast.success('Alimento cadastrado no catálogo!');
       }
       onClose();
     } catch (err: any) {

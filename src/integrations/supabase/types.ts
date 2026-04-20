@@ -92,6 +92,7 @@ export type Database = {
           created_at: string
           fat: number
           id: string
+          is_template: boolean
           meal: string
           name: string
           notes: string | null
@@ -109,6 +110,7 @@ export type Database = {
           created_at?: string
           fat?: number
           id?: string
+          is_template?: boolean
           meal?: string
           name: string
           notes?: string | null
@@ -126,6 +128,7 @@ export type Database = {
           created_at?: string
           fat?: number
           id?: string
+          is_template?: boolean
           meal?: string
           name?: string
           notes?: string | null
