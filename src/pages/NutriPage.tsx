@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Plus, Apple, Flame, Beef, Wheat, Droplet, Trash2, Edit2, Calendar } from 'lucide-react';
+import { Plus, Apple, Flame, Beef, Wheat, Droplet, Trash2, Edit2, Calendar, UtensilsCrossed, BookOpen } from 'lucide-react';
 import { format, isToday, isThisWeek, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -8,6 +8,7 @@ import { GlassCard } from '@/components/ui/glass-card';
 import { StatCard } from '@/components/ui/stat-card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FoodModal } from '@/components/nutri/FoodModal';
+import { TodayMealModal } from '@/components/nutri/TodayMealModal';
 import { Food, useNutriStore } from '@/stores/nutriStore';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, Legend } from 'recharts';
 import { toast } from 'sonner';
@@ -33,8 +34,9 @@ const MEAL_LABELS: Record<string, string> = {
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 export default function NutriPage() {
-  const { foods, fetchFoods, deleteFood, loading } = useNutriStore();
+  const { foods, templates, fetchFoods, deleteFood, loading } = useNutriStore();
   const [modalOpen, setModalOpen] = useState(false);
+  const [todayModalOpen, setTodayModalOpen] = useState(false);
   const [editingFood, setEditingFood] = useState<Food | null>(null);
   const [period, setPeriod] = useState<'today' | 'week' | 'all'>('week');
 
@@ -215,6 +217,55 @@ export default function NutriPage() {
           </GlassCard>
         </div>
 
+        {/* Catálogo de alimentos cadastrados */}
+        <GlassCard className="p-4">
+          <h3 className="font-semibold mb-4 flex items-center gap-2">
+            <BookOpen className="w-4 h-4" /> Alimentos cadastrados ({templates.length})
+          </h3>
+          {templates.length === 0 ? (
+            <p className="text-muted-foreground text-sm text-center py-6">
+              Nenhum alimento cadastrado. Use "Cadastrar Alimento" para criar seu catálogo.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {templates.map((t) => (
+                <div
+                  key={t.id}
+                  className="flex items-center justify-between gap-2 p-3 rounded-lg bg-card/50 border border-border/50"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate text-sm">{t.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {CATEGORY_LABELS[t.category]} · {t.calories} kcal/{t.unit}
+                    </p>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <Button size="icon" variant="ghost" onClick={() => handleEdit(t)} className="h-7 w-7">
+                      <Edit2 className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleDelete(t.id)}
+                      className="h-7 w-7 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </GlassCard>
+
+        {/* Botão Comida de Hoje */}
+        <div className="flex justify-end">
+          <Button variant="neon" onClick={() => setTodayModalOpen(true)} disabled={templates.length === 0}>
+            <UtensilsCrossed className="w-4 h-4" />
+            Comida de Hoje
+          </Button>
+        </div>
+
         {/* History */}
         <GlassCard className="p-4">
           <h3 className="font-semibold mb-4 flex items-center gap-2">
@@ -224,7 +275,7 @@ export default function NutriPage() {
             <p className="text-muted-foreground text-sm text-center py-8">Carregando...</p>
           ) : filtered.length === 0 ? (
             <p className="text-muted-foreground text-sm text-center py-8">
-              Nenhum alimento cadastrado nesse período. Clique em "Cadastrar Alimento" para começar.
+              Nenhum consumo registrado nesse período. Clique em "Comida de Hoje" para registrar.
             </p>
           ) : (
             <div className="space-y-2">
@@ -249,9 +300,6 @@ export default function NutriPage() {
                     </p>
                   </div>
                   <div className="flex gap-1 shrink-0">
-                    <Button size="icon" variant="ghost" onClick={() => handleEdit(f)} className="h-8 w-8">
-                      <Edit2 className="w-3 h-3" />
-                    </Button>
                     <Button
                       size="icon"
                       variant="ghost"
@@ -269,6 +317,7 @@ export default function NutriPage() {
       </div>
 
       <FoodModal open={modalOpen} onClose={() => setModalOpen(false)} food={editingFood} />
+      <TodayMealModal open={todayModalOpen} onClose={() => setTodayModalOpen(false)} />
     </MainLayout>
   );
 }
