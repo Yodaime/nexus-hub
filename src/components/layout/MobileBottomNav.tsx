@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { CheckSquare, Wallet, Bell, LayoutDashboard, Repeat, Target, Sparkles, Apple } from 'lucide-react';
+import { CheckSquare, Wallet, Bell, LayoutDashboard, Repeat, Target, Sparkles, Apple, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -12,6 +12,7 @@ const navItems = [
   { title: 'Organizar', icon: LayoutDashboard, path: '/organize' },
   { title: 'Aprendizado', icon: Sparkles, path: '/learning' },
   { title: 'Nutri', icon: Apple, path: '/nutri' },
+  { title: 'Sono/Humor', icon: Moon, path: '/mood' },
 ];
 
 export function MobileBottomNav() {
