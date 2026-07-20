@@ -6,6 +6,7 @@ import {
   Wallet,
   Bell,
   LayoutDashboard,
+  LayoutGrid,
   Menu,
   X,
   Sparkles,
@@ -20,7 +21,8 @@ import { Button } from '@/components/ui/button';
 import { authService } from '@/services/authService';
 
 const navItems = [
-  { title: 'Tarefas', icon: CheckSquare, path: '/' },
+  { title: 'Geral', icon: LayoutGrid, path: '/' },
+  { title: 'Tarefas', icon: CheckSquare, path: '/tasks' },
   { title: 'Finanças', icon: Wallet, path: '/finances' },
   { title: 'Hábitos', icon: Repeat, path: '/habits' },
   { title: 'Lembretes', icon: Bell, path: '/reminders' },
