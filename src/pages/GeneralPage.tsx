@@ -8,7 +8,6 @@ import {
   Repeat,
   Bell,
   Target,
-  LayoutDashboard,
   Sparkles,
   Apple,
   Moon,
@@ -136,13 +135,6 @@ export default function GeneralPage() {
       icon: Target,
       path: '/goals',
       color: 'from-primary to-secondary',
-    },
-    {
-      title: 'Organizar',
-      description: 'Quadro Kanban de tarefas',
-      icon: LayoutDashboard,
-      path: '/organize',
-      color: 'from-secondary to-primary',
     },
     {
       title: 'Aprendizado',
