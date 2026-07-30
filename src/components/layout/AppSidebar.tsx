@@ -5,7 +5,6 @@ import {
   CheckSquare,
   Wallet,
   Bell,
-  LayoutDashboard,
   LayoutGrid,
   Menu,
   X,

@@ -11,7 +11,7 @@ import FinancesPage from "./pages/FinancesPage";
 import HabitsPage from "./pages/HabitsPage";
 import RemindersPage from "./pages/RemindersPage";
 import GoalsPage from "./pages/GoalsPage";
-import OrganizePage from "./pages/OrganizePage";
+
 import LearningPage from "./pages/LearningPage";
 import NutriPage from "./pages/NutriPage";
 import MoodPage from "./pages/MoodPage";
