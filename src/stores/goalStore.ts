@@ -3,14 +3,23 @@ import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
 import { Goal, GoalFrequency, GoalStatus } from '@/types';
 
+/** Registro de conclusão de uma meta em uma data específica (YYYY-MM-DD) */
+export interface GoalCompletion {
+  goalId: string;
+  date: string;
+}
+
 interface GoalState {
   goals: Goal[];
+  completions: GoalCompletion[];
   addGoal: (goal: Omit<Goal, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateGoal: (id: string, updates: Partial<Goal>) => void;
   deleteGoal: (id: string) => void;
   getGoalsByFrequency: (frequency: GoalFrequency) => Goal[];
   getGoalsByStatus: (status: GoalStatus) => Goal[];
   moveGoal: (id: string, newStatus: GoalStatus) => void;
+  toggleCompletion: (goalId: string, date: string) => void;
+  isCompleted: (goalId: string, date: string) => boolean;
 }
 
 export const useGoalStore = create<GoalState>()(
@@ -54,6 +63,9 @@ export const useGoalStore = create<GoalState>()(
           updatedAt: new Date().toISOString(),
         },
       ],
+      completions: [],
+
+
 
       addGoal: (goal) =>
         set((state) => ({
@@ -97,6 +109,22 @@ export const useGoalStore = create<GoalState>()(
           ),
         }));
       },
+
+      // Marca/desmarca a conclusão de uma meta em um dia específico
+      toggleCompletion: (goalId, date) => {
+        set((state) => {
+          const list = state.completions ?? [];
+          const exists = list.some((c) => c.goalId === goalId && c.date === date);
+          return {
+            completions: exists
+              ? list.filter((c) => !(c.goalId === goalId && c.date === date))
+              : [...list, { goalId, date }],
+          };
+        });
+      },
+
+      isCompleted: (goalId, date) =>
+        (get().completions ?? []).some((c) => c.goalId === goalId && c.date === date),
     }),
     {
       name: 'goal-store',
