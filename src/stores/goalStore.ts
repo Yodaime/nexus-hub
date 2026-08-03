@@ -106,6 +106,22 @@ export const useGoalStore = create<GoalState>()(
           ),
         }));
       },
+
+      // Marca/desmarca a conclusão de uma meta em um dia específico
+      toggleCompletion: (goalId, date) => {
+        set((state) => {
+          const list = state.completions ?? [];
+          const exists = list.some((c) => c.goalId === goalId && c.date === date);
+          return {
+            completions: exists
+              ? list.filter((c) => !(c.goalId === goalId && c.date === date))
+              : [...list, { goalId, date }],
+          };
+        });
+      },
+
+      isCompleted: (goalId, date) =>
+        (get().completions ?? []).some((c) => c.goalId === goalId && c.date === date),
     }),
     {
       name: 'goal-store',
