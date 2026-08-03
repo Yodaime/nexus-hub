@@ -63,6 +63,9 @@ export const useGoalStore = create<GoalState>()(
           updatedAt: new Date().toISOString(),
         },
       ],
+      completions: [],
+
+
 
       addGoal: (goal) =>
         set((state) => ({
